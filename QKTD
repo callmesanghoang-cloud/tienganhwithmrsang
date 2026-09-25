@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Tập Thì Quá Khứ Tiếp Diễn & Quá Khứ Đơn</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .correct-input {
+            border-color: #10B981 !important;
+            background-color: #ECFDF5 !important;
+            color: #065F46 !important;
+        }
+        .dark .correct-input {
+            background-color: #064E3B !important;
+            color: #A7F3D0 !important;
+        }
+        .incorrect-input {
+            border-color: #EF4444 !important;
+            background-color: #FEF2F2 !important;
+            color: #991B1B !important;
+        }
+        .dark .incorrect-input {
+            background-color: #7F1D1D !important;
+            color: #FECACA !important;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <!-- Header Navbar -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl text-slate-900 dark:text-white leading-tight">Luyện Tập Ngữ Pháp</h1>
+                    <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Quá Khứ Tiếp Diễn & Quá Khứ Đơn (60 Câu)</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button onclick="toggleTheoryModal()" class="px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl transition-colors flex items-center gap-1.5 border border-emerald-200 dark:border-emerald-800">
+                    <i class="fa-solid fa-book-open text-emerald-600 dark:text-emerald-400"></i>
+                    <span class="hidden sm:inline">Lý Thuyết & Mẹo Mẫu</span>
+                </button>
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Bật/Tắt Chế Độ Tối">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- Top Stats Banner -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-xs border border-slate-200 dark:border-slate-700 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                <div class="md:col-span-2">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Tiến độ đã nộp/kiểm tra</span>
+                        <span id="progress-percentage" class="text-sm font-bold text-emerald-600 dark:text-emerald-400">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                        <div id="progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-around md:justify-end md:space-x-8 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-700">
+                    <div class="text-center">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Số Câu Đúng</p>
+                        <p id="score-text" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">0 / 60</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Đã Kiểm Tra</p>
+                        <p id="checked-text" class="text-2xl font-black text-slate-800 dark:text-white">0 / 60</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Filters & Global Controls -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+            <!-- Filter Tabs -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
+                <button onclick="filterSection('ALL')" class="section-tab active-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-emerald-600 text-white shadow-xs" data-section="ALL">Tất Cả (60)</button>
+                <button onclick="filterSection('A')" class="section-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-section="A">Phần A (10)</button>
+                <button onclick="filterSection('B')" class="section-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-section="B">Phần B (10)</button>
+                <button onclick="filterSection('C')" class="section-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-section="C">Phần C (10)</button>
+                <button onclick="filterSection('D')" class="section-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-section="D">Phần D (10)</button>
+                <button onclick="filterSection('E')" class="section-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-section="E">Phần E (10)</button>
+                <button onclick="filterSection('F')" class="section-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-section="F">Phần F (10)</button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="checkAllAnswers()" class="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-xs transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Nộp & Kiểm Tra Tất Cả
+                </button>
+                <button onclick="resetAll()" class="px-3.5 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-1.5" title="Làm Lại Toàn Bộ">
+                    <i class="fa-solid fa-rotate-left"></i> <span class="hidden sm:inline">Làm Lại</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Question Section Description Banner -->
+        <div id="section-info-card" class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60 rounded-xl p-4 mb-6 flex items-start gap-3">
+            <i class="fa-solid fa-circle-info text-emerald-600 dark:text-emerald-400 text-xl mt-0.5"></i>
+            <div>
+                <h2 id="section-title" class="font-bold text-emerald-900 dark:text-emerald-200">Tất Cả Bài Tập</h2>
+                <p id="section-desc" class="text-sm text-emerald-700 dark:text-emerald-300 mt-0.5">Nhập từ vào ô trống. Nhấn <b>Enter</b> hoặc bấm nút <b>"Kiểm Tra"</b> tại câu đó để hiện đáp án, dịch nghĩa và mẹo ngữ pháp.</p>
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questions-container" class="space-y-4">
+            <!-- Questions dynamically generated by Javascript -->
+        </div>
+    </main>
+
+    <!-- Modal Theory Sheet -->
+    <div id="theory-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden transition-opacity duration-200">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-200 dark:border-slate-700">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-emerald-600 dark:text-emerald-400"></i>
+                    Lý Thuyết & Mẹo Nhận Biết Ngữ Pháp
+                </h3>
+                <button onclick="toggleTheoryModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-6 text-sm sm:text-base leading-relaxed">
+                <!-- Concept 1 -->
+                <div class="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900">
+                    <h4 class="font-bold text-emerald-900 dark:text-emerald-200 mb-1">1. Cấu Trúc Thì Quá Khứ Tiếp Diễn (Past Continuous)</h4>
+                    <p class="text-slate-700 dark:text-slate-300"><b>Khẳng định:</b> S + was / were + V-ing</p>
+                    <p class="text-slate-700 dark:text-slate-300"><b>Phủ định:</b> S + was not (wasn't) / were not (weren't) + V-ing</p>
+                    <p class="text-slate-700 dark:text-slate-300"><b>Nghi vấn:</b> (Wh-) + Was / Were + S + V-ing...?</p>
+                    <ul class="list-disc pl-5 mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                        <li><b>I, He, She, It, Danh từ số ít</b> → dùng <b>WAS</b></li>
+                        <li><b>You, We, They, Danh từ số nhiều</b> → dùng <b>WERE</b></li>
+                    </ul>
+                </div>
+
+                <!-- Concept 2 -->
+                <div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600">
+                    <h4 class="font-bold text-slate-900 dark:text-slate-100 mb-1">2. Dấu Hiệu Nhận Biết Chính</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                        <li><b>at + giờ + thời gian quá khứ:</b> <i>at 8 p.m. yesterday, at 6 o'clock last night...</i></li>
+                        <li><b>at this time / at this moment + thời gian quá khứ:</b> <i>at this time yesterday, at this time last week...</i></li>
+                    </ul>
+                </div>
+
+                <!-- Concept 3 -->
+                <div class="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-xl border border-amber-100 dark:border-amber-900">
+                    <h4 class="font-bold text-amber-900 dark:text-amber-200 mb-1">3. Phân Biệt WHEN và WHILE</h4>
+                    <div class="space-y-2 text-slate-700 dark:text-slate-300">
+                        <p><b>A. Hai hành động xảy ra song song:</b> Dùng <b>WHILE</b> cho cả hai vế (QKTD + QKTD)</p>
+                        <p class="bg-white dark:bg-slate-800 p-2 rounded text-xs sm:text-sm border border-amber-200 dark:border-amber-800">
+                            → While S + was/were V-ing, S + was/were V-ing.
+                        </p>
+                        <p><b>B. Hành động đang diễn ra thì có hành động khác xen vào:</b></p>
+                        <p class="bg-white dark:bg-slate-800 p-2 rounded text-xs sm:text-sm border border-amber-200 dark:border-amber-800">
+                            → <b>Hành động đang diễn ra:</b> Chia Quá Khứ Tiếp Diễn (was/were V-ing)<br>
+                            → <b>Hành động xen vào:</b> Chia Quá Khứ Đơn (V2/ed)
+                        </p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 italic">Mẹo nhanh: Sau WHEN thường dùng Quá Khứ Đơn, sau WHILE thường dùng Quá Khứ Tiếp Diễn.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-right">
+                <button onclick="toggleTheoryModal()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-sm transition-colors">
+                    Đã Hiểu, Bắt Đầu Làm Bài
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Script and Logic -->
+    <script>
+        // Array of 60 questions with hidden metadata (answers, translations, tips)
+        const rawData = [
+            // Section A (1-10)
+            {
+                id: 1, section: 'A', sectionTitle: 'A. Một hành động đang diễn ra tại một thời điểm xác định trong quá khứ',
+                text: '1. I [input0] (study) English at 8 p.m. yesterday.',
+                answers: [['was studying']],
+                translation: 'Tôi đang học tiếng Anh lúc 8 giờ tối qua.',
+                tip: 'Có dấu hiệu "at 8 p.m. yesterday" (at + giờ + mốc quá khứ) -> Chia Quá khứ tiếp diễn: S (I) + was + V-ing.'
+            },
+            {
+                id: 2, section: 'A',
+                text: '2. She [input0] (cook) dinner at 6 o’clock last night.',
+                answers: [['was cooking']],
+                translation: 'Cô ấy đang nấu ăn tối lúc 6 giờ tối qua.',
+                tip: 'Có dấu hiệu "at 6 o’clock last night" -> Chia Quá khứ tiếp diễn với chủ ngữ She: was cooking.'
+            },
+            {
+                id: 3, section: 'A',
+                text: '3. They [input0] (play) football at 4 p.m. yesterday.',
+                answers: [['were playing']],
+                translation: 'Họ đang chơi bóng đá lúc 4 giờ chiều qua.',
+                tip: 'Chủ ngữ "They" (số nhiều) đi với "were". Dấu hiệu "at 4 p.m. yesterday" -> were playing.'
+            },
+            {
+                id: 4, section: 'A',
+                text: '4. We [input0] (watch) TV at this time yesterday.',
+                answers: [['were watching']],
+                translation: 'Chúng tôi đang xem TV vào thời điểm này ngày hôm qua.',
+                tip: 'Dấu hiệu "at this time yesterday" (vào giờ này hôm qua) -> Chia Quá khứ tiếp diễn: We + were watching.'
+            },
+            {
+                id: 5, section: 'A',
+                text: '5. He [input0] (sleep) at 11 p.m. last night.',
+                answers: [['was sleeping']],
+                translation: 'Anh ấy đang ngủ lúc 11 giờ tối qua.',
+                tip: 'Dấu hiệu "at 11 p.m. last night" -> Quá khứ tiếp diễn: He + was sleeping.'
+            },
+            {
+                id: 6, section: 'A',
+                text: '6. My parents [input0] (work) at this time last Monday.',
+                answers: [['were working']],
+                translation: 'Bố mẹ tôi đang làm việc vào thời điểm này thứ Hai tuần trước.',
+                tip: 'Chủ ngữ "My parents" (số nhiều) + "at this time last Monday" -> were working.'
+            },
+            {
+                id: 7, section: 'A',
+                text: '7. The students [input0] (do) their homework at 7 p.m. yesterday.',
+                answers: [['were doing']],
+                translation: 'Các học sinh đang làm bài tập về nhà lúc 7 giờ tối qua.',
+                tip: '"The students" (danh từ số nhiều) + "at 7 p.m. yesterday" -> were doing.'
+            },
+            {
+                id: 8, section: 'A',
+                text: '8. I [input0] (read) a book at this time two days ago.',
+                answers: [['was reading']],
+                translation: 'Tôi đang đọc một cuốn sách vào giờ này hai ngày trước.',
+                tip: '"at this time two days ago" -> Hành động đang diễn ra ở mốc cụ thể trong quá khứ -> I + was reading.'
+            },
+            {
+                id: 9, section: 'A',
+                text: '9. Lan [input0] (practice) the piano at 9 o’clock last night.',
+                answers: [['was practicing', 'was practising']],
+                translation: 'Lan đang luyện tập đàn piano lúc 9 giờ tối qua.',
+                tip: '"at 9 o’clock last night" -> Lan + was practicing (hoặc was practising).'
+            },
+            {
+                id: 10, section: 'A',
+                text: '10. The children [input0] (play) in the garden at 5 p.m. yesterday.',
+                answers: [['were playing']],
+                translation: 'Bọn trẻ đang chơi trong vườn lúc 5 giờ chiều qua.',
+                tip: '"The children" (bọn trẻ - số nhiều) + "at 5 p.m. yesterday" -> were playing.'
+            },
+
+            // Section B (11-20)
+            {
+                id: 11, section: 'B', sectionTitle: 'B. Hai hành động xảy ra song song – WHILE',
+                text: '11. I [input0] (read) a book while my sister [input1] (watch) TV.',
+                answers: [['was reading'], ['was watching']],
+                translation: 'Tôi đang đọc sách trong khi em gái tôi đang xem TV.',
+                tip: 'Liên từ "WHILE" nối 2 hành động xảy ra song song cùng lúc -> Cả 2 vế chia Quá khứ tiếp diễn (was reading | was watching).'
+            },
+            {
+                id: 12, section: 'B',
+                text: '12. She [input0] (cook) while her mother [input1] (clean) the kitchen.',
+                answers: [['was cooking'], ['was cleaning']],
+                translation: 'Cô ấy đang nấu ăn trong khi mẹ cô ấy đang dọn dẹp nhà bếp.',
+                tip: 'Hai hành động diễn ra song song với "while" -> Vế 1: She was cooking | Vế 2: her mother was cleaning.'
+            },
+            {
+                id: 13, section: 'B',
+                text: '13. They [input0] (play) football while we [input1] (study) English.',
+                answers: [['were playing'], ['were studying']],
+                translation: 'Họ đang chơi bóng đá trong khi chúng tôi đang học tiếng Anh.',
+                tip: 'Hành động song song với "while" -> They were playing | we were studying.'
+            },
+            {
+                id: 14, section: 'B',
+                text: '14. I [input0] (listen) to music while my brother [input1] (do) his homework.',
+                answers: [['was listening'], ['was doing']],
+                translation: 'Tôi đang nghe nhạc trong khi anh tôi đang làm bài tập về nhà.',
+                tip: 'Hành động song song với "while" -> I was listening | my brother was doing.'
+            },
+            {
+                id: 15, section: 'B',
+                text: '15. While Tom [input0] (ride) his bike, his friends [input1] (walk) home.',
+                answers: [['was riding'], ['were walking']],
+                translation: 'Trong khi Tom đang đạp xe, các bạn của cậu ấy đang đi bộ về nhà.',
+                tip: 'Mệnh đề WHILE đứng đầu câu chỉ 2 hành động song song -> Tom was riding | his friends were walking.'
+            },
+            {
+                id: 16, section: 'B',
+                text: '16. While we [input0] (have) dinner, our parents [input1] (talk) about their trip.',
+                answers: [['were having'], ['were talking']],
+                translation: 'Trong khi chúng tôi đang ăn tối, bố mẹ chúng tôi đang nói chuyện về chuyến đi của họ.',
+                tip: 'Động từ "have" tận cùng bằng "e", bỏ "e" thêm "ing" -> having. Hai vế chia Quá khứ tiếp diễn.'
+            },
+            {
+                id: 17, section: 'B',
+                text: '17. The students [input0] (write) while the teacher [input1] (check) their homework.',
+                answers: [['were writing'], ['was checking']],
+                translation: 'Các học sinh đang viết trong khi giáo viên đang kiểm tra bài tập của họ.',
+                tip: 'Hai hành động song song -> The students (số nhiều) were writing | the teacher (số ít) was checking.'
+            },
+            {
+                id: 18, section: 'B',
+                text: '18. While I [input0] (work), my wife [input1] (watch) a movie.',
+                answers: [['was working'], ['was watching']],
+                translation: 'Trong khi tôi đang làm việc, vợ tôi đang xem một bộ phim.',
+                tip: 'Hai hành động song song với While -> I was working | my wife was watching.'
+            },
+            {
+                id: 19, section: 'B',
+                text: '19. While she [input0] (take) a shower, her brother [input1] (play) video games.',
+                answers: [['was taking'], ['was playing']],
+                translation: 'Trong khi cô ấy đang tắm, anh trai cô ấy đang chơi trò chơi điện tử.',
+                tip: 'Động từ "take" -> taking. Hai hành động diễn ra cùng lúc -> She was taking | her brother was playing.'
+            },
+            {
+                id: 20, section: 'B',
+                text: '20. While they [input0] (travel) by bus, they [input1] (talk) about school.',
+                answers: [['were traveling', 'were travelling'], ['were talking']],
+                translation: 'Trong khi họ đang đi trên xe buýt, họ đang nói chuyện về trường học.',
+                tip: 'Lưu ý "traveling" (Mỹ) hoặc "travelling" (Anh) đều đúng -> were traveling/travelling | were talking.'
+            },
+
+            // Section C (21-30)
+            {
+                id: 21, section: 'C', sectionTitle: 'C. Hành động đang diễn ra + hành động xen vào – WHEN',
+                text: '21. I [input0] (study) when my friend [input1] (call) me.',
+                answers: [['was studying'], ['called']],
+                translation: 'Tôi đang học thì bạn tôi gọi điện cho tôi.',
+                tip: 'Hành động đang diễn ra chia Quá khứ tiếp diễn (was studying), hành động ngắn xen vào chia Quá khứ đơn (called).'
+            },
+            {
+                id: 22, section: 'C',
+                text: '22. She [input0] (sleep) when the phone [input1] (ring).',
+                answers: [['was sleeping'], ['rang']],
+                translation: 'Cô ấy đang ngủ thì điện thoại reo.',
+                tip: 'Đang ngủ (QKTD: was sleeping) + tiếng chuông xen vào (QKĐ: ring -> rang).'
+            },
+            {
+                id: 23, section: 'C',
+                text: '23. We [input0] (have) dinner when the lights [input1] (go) out.',
+                answers: [['were having'], ['went']],
+                translation: 'Chúng tôi đang ăn tối thì đèn bị tắt (mất điện).',
+                tip: 'Đang ăn tối (QKTD: were having) + đèn tắt cắt ngang (QKĐ: go -> went).'
+            },
+            {
+                id: 24, section: 'C',
+                text: '24. They [input0] (play) football when it [input1] (start) to rain.',
+                answers: [['were playing'], ['started']],
+                translation: 'Họ đang chơi bóng đá thì trời bắt đầu mưa.',
+                tip: 'Đang chơi bóng đá (QKTD: were playing) + trời mưa xen vào (QKĐ: started).'
+            },
+            {
+                id: 25, section: 'C',
+                text: '25. He [input0] (drive) home when he [input1] (see) an accident.',
+                answers: [['was driving'], ['saw']],
+                translation: 'Anh ấy đang lái xe về nhà thì nhìn thấy một vụ tai nạn.',
+                tip: 'Đang lái xe (QKTD: was driving) + nhìn thấy vụ tai nạn (QKĐ: see -> saw).'
+            },
+            {
+                id: 26, section: 'C',
+                text: '26. I [input0] (watch) TV when my mother [input1] (come) home.',
+                answers: [['was watching'], ['came']],
+                translation: 'Tôi đang xem TV thì mẹ tôi về nhà.',
+                tip: 'Đang xem TV (QKTD: was watching) + mẹ về xen vào (QKĐ: come -> came).'
+            },
+            {
+                id: 27, section: 'C',
+                text: '27. She [input0] (read) a book when her brother [input1] (open) the door.',
+                answers: [['was reading'], ['opened']],
+                translation: 'Cô ấy đang đọc sách thì em trai cô ấy mở cửa.',
+                tip: 'Đang đọc sách (QKTD: was reading) + mở cửa xen vào (QKĐ: opened).'
+            },
+            {
+                id: 28, section: 'C',
+                text: '28. We [input0] (walk) to school when we [input1] (meet) our teacher.',
+                answers: [['were walking'], ['met']],
+                translation: 'Chúng tôi đang đi bộ đến trường thì gặp thầy/cô giáo.',
+                tip: 'Đang đi bộ (QKTD: were walking) + gặp thầy cô (QKĐ: meet -> met).'
+            },
+            {
+                id: 29, section: 'C',
+                text: '29. Tom [input0] (take) a shower when someone [input1] (knock) on the door.',
+                answers: [['was taking'], ['knocked']],
+                translation: 'Tom đang tắm thì có ai đó gõ cửa.',
+                tip: 'Đang tắm (QKTD: was taking) + gõ cửa xen vào (QKĐ: knocked).'
+            },
+            {
+                id: 30, section: 'C',
+                text: '30. The children [input0] (play) outside when their father [input1] (arrive).',
+                answers: [['were playing'], ['arrived']],
+                translation: 'Bọn trẻ đang chơi bên ngoài thì bố của chúng đến.',
+                tip: 'Bọn trẻ đang chơi (QKTD: were playing) + bố đến (QKĐ: arrived).'
+            },
+
+            // Section D (31-40)
+            {
+                id: 31, section: 'D', sectionTitle: 'D. WHEN / WHILE – Tổng hợp',
+                text: '31. While I [input0] (do) my homework, my sister [input1] (listen) to music.',
+                answers: [['was doing'], ['was listening']],
+                translation: 'Trong khi tôi đang làm bài tập, em gái tôi đang nghe nhạc.',
+                tip: 'Cấu trúc WHILE nối 2 hành động song song -> Cả hai vế chia QKTD (was doing | was listening).'
+            },
+            {
+                id: 32, section: 'D',
+                text: '32. I [input0] (do) my homework when my friend [input1] (send) me a message.',
+                answers: [['was doing'], ['sent']],
+                translation: 'Tôi đang làm bài tập thì bạn tôi gửi tin nhắn cho tôi.',
+                tip: 'Đang làm bài tập (QKTD: was doing) + bạn gửi tin nhắn xen vào (QKĐ: send -> sent).'
+            },
+            {
+                id: 33, section: 'D',
+                text: '33. While they [input0] (watch) TV, their mother [input1] (cook) dinner.',
+                answers: [['were watching'], ['was cooking']],
+                translation: 'Trong khi họ đang xem TV, mẹ họ đang nấu ăn tối.',
+                tip: 'WHILE đứng đầu câu nối 2 hành động song song -> Cả hai chia QKTD (were watching | was cooking).'
+            },
+            {
+                id: 34, section: 'D',
+                text: '34. They [input0] (watch) TV when their father [input1] (arrive).',
+                answers: [['were watching'], ['arrived']],
+                translation: 'Họ đang xem TV thì bố họ về đến nhà.',
+                tip: 'Đang xem TV (QKTD: were watching) + bố về xen vào (QKĐ: arrived).'
+            },
+            {
+                id: 35, section: 'D',
+                text: '35. When I [input0] (walk) home, I [input1] (see) an old friend.',
+                answers: [['was walking'], ['saw']],
+                translation: 'Khi tôi đang đi bộ về nhà, tôi gặp một người bạn cũ.',
+                tip: 'When có thể đi với mệnh đề kéo dài (When I was walking...) + hành động xen vào (saw).'
+            },
+            {
+                id: 36, section: 'D',
+                text: '36. While I [input0] (walk) home, my brother [input1] (ride) his bike beside me.',
+                answers: [['was walking'], ['was riding']],
+                translation: 'Trong khi tôi đang đi bộ về nhà, anh tôi đang đạp xe bên cạnh tôi.',
+                tip: 'WHILE nối 2 hành động song song -> Cả 2 vế chia QKTD (was walking | was riding).'
+            },
+            {
+                id: 37, section: 'D',
+                text: '37. She [input0] (study) at 8 p.m. yesterday when her mother [input1] (call) her.',
+                answers: [['was studying'], ['called']],
+                translation: 'Cô ấy đang học lúc 8 giờ tối qua thì mẹ cô ấy gọi cho cô ấy.',
+                tip: 'Đang học tại giờ xác định (QKTD: was studying) + mẹ gọi tới xen vào (QKĐ: called).'
+            },
+            {
+                id: 38, section: 'D',
+                text: '38. While he [input0] (study), his brother [input1] (play) computer games.',
+                answers: [['was studying'], ['was playing']],
+                translation: 'Trong khi anh ấy đang học, em trai anh ấy đang chơi trò chơi máy tính.',
+                tip: 'WHILE nối 2 hành động song song -> Cả hai vế chia QKTD (was studying | was playing).'
+            },
+            {
+                id: 39, section: 'D',
+                text: '39. We [input0] (wait) for the bus when it [input1] (start) to rain.',
+                answers: [['were waiting'], ['started']],
+                translation: 'Chúng tôi đang chờ xe buýt thì trời bắt đầu mưa.',
+                tip: 'Đang đợi xe buýt (QKTD: were waiting) + mưa bắt đầu rơi (QKĐ: started).'
+            },
+            {
+                id: 40, section: 'D',
+                text: '40. While we [input0] (wait) for the bus, we [input1] (talk) about our holiday.',
+                answers: [['were waiting'], ['were talking']],
+                translation: 'Trong khi chúng tôi đang chờ xe buýt, chúng tôi đang nói chuyện về kỳ nghỉ.',
+                tip: 'WHILE chỉ 2 hành động diễn ra song song -> Cả hai chia QKTD (were waiting | were talking).'
+            },
+
+            // Section E (41-50)
+            {
+                id: 41, section: 'E', sectionTitle: 'E. Câu phủ định và nghi vấn',
+                text: '41. I [input0] (not sleep) at 10 p.m. yesterday.',
+                answers: [['was not sleeping', 'wasn\'t sleeping']],
+                translation: 'Tôi đã không đang ngủ lúc 10 giờ tối qua.',
+                tip: 'Thể phủ định QKTD: S + was not (wasn\'t) / were not (weren\'t) + V-ing -> I was not sleeping / wasn\'t sleeping.'
+            },
+            {
+                id: 42, section: 'E',
+                text: '42. She [input0] (not watch) TV when I [input1] (call) her.',
+                answers: [['was not watching', 'wasn\'t watching'], ['called']],
+                translation: 'Cô ấy đang không xem TV khi tôi gọi cho cô ấy.',
+                tip: 'Vế 1: Phủ định QKTD (was not watching / wasn\'t watching) | Vế 2: Xen vào chia QKĐ (called).'
+            },
+            {
+                id: 43, section: 'E',
+                text: '43. They [input0] (not play) football when it [input1] (start) raining.',
+                answers: [['were not playing', 'weren\'t playing'], ['started']],
+                translation: 'Họ đang không chơi bóng đá khi trời bắt đầu mưa.',
+                tip: 'Phủ định QKTD với chủ ngữ "They": were not playing / weren\'t playing + vế sau QKĐ: started.'
+            },
+            {
+                id: 44, section: 'E',
+                text: '44. We [input0] (not study) while the teacher [input1] (explain) the lesson.',
+                answers: [['were not studying', 'weren\'t studying'], ['was explaining']],
+                translation: 'Chúng tôi đã không đang học trong khi cô giáo đang giảng bài.',
+                tip: 'Hai hành động song song với While -> Vế 1 phủ định: were not studying | Vế 2 khẳng định: was explaining.'
+            },
+            {
+                id: 45, section: 'E',
+                text: '45. [input0] you [input1] (study) at 8 p.m. last night?',
+                answers: [['Were', 'were'], ['studying']],
+                translation: 'Bạn có đang học bài lúc 8 giờ tối qua không?',
+                tip: 'Câu hỏi Yes/No với QKTD: Was/Were + S + V-ing...? -> Ô 1: Were (viết hoa đầu câu) | Ô 2: studying.'
+            },
+            {
+                id: 46, section: 'E',
+                text: '46. [input0] she [input1] (cook) when you [input2] (arrive)?',
+                answers: [['Was', 'was'], ['cooking'], ['arrived']],
+                translation: 'Cô ấy có đang nấu ăn khi bạn đến không?',
+                tip: 'Câu hỏi QKTD với chủ ngữ She: Ô 1: Was | Ô 2: cooking | Vế xen vào QKĐ -> Ô 3: arrived.'
+            },
+            {
+                id: 47, section: 'E',
+                text: '47. What [input0] you [input1] (do) at this time yesterday?',
+                answers: [['were'], ['doing']],
+                translation: 'Bạn đang làm gì vào thời điểm này ngày hôm qua?',
+                tip: 'Câu hỏi Wh- với QKTD: Wh- + was/were + S + V-ing? -> Ô 1: were | Ô 2: doing.'
+            },
+            {
+                id: 48, section: 'E',
+                text: '48. What [input0] they [input1] (talk) about when you [input2] (see) them?',
+                answers: [['were'], ['talking'], ['saw']],
+                translation: 'Họ đang nói về cái gì khi bạn nhìn thấy họ?',
+                tip: 'Cấu trúc câu hỏi: What + were + they + talking + when you + saw them?'
+            },
+            {
+                id: 49, section: 'E',
+                text: '49. Where [input0] he [input1] (go) when you [input2] (meet) him?',
+                answers: [['was'], ['going'], ['met']],
+                translation: 'Anh ấy đang đi đâu khi bạn gặp anh ấy?',
+                tip: 'Where + was + he + going + when you + met him?'
+            },
+            {
+                id: 50, section: 'E',
+                text: '50. [input0] they [input1] (watch) TV while you [input2] (do) your homework?',
+                answers: [['Were', 'were'], ['watching'], ['were doing']],
+                translation: 'Họ có đang xem TV trong khi bạn đang làm bài tập không?',
+                tip: 'Câu hỏi 2 hành động song song với While: Were they watching TV while you were doing your homework?'
+            },
+
+            // Section F (51-60)
+            {
+                id: 51, section: 'F', sectionTitle: 'F. Bài tập tổng hợp – Nhận biết dấu hiệu',
+                text: '51. At 7 a.m. yesterday, I [input0] (have) breakfast.',
+                answers: [['was having']],
+                translation: 'Lúc 7 giờ sáng qua, tôi đang ăn sáng.',
+                tip: 'Mốc thời gian xác định trong quá khứ "At 7 a.m. yesterday" -> QKTD: I was having.'
+            },
+            {
+                id: 52, section: 'F',
+                text: '52. At this time three months ago, we [input0] (travel) around Vietnam.',
+                answers: [['were traveling', 'were travelling']],
+                translation: 'Vào thời điểm này 3 tháng trước, chúng tôi đang đi du lịch quanh Việt Nam.',
+                tip: '"At this time + thời gian quá khứ" -> QKTD với We: were traveling / were travelling.'
+            },
+            {
+                id: 53, section: 'F',
+                text: '53. I [input0] (read) a book while my brother [input1] (play) the guitar.',
+                answers: [['was reading'], ['was playing']],
+                translation: 'Tôi đang đọc sách trong khi anh tôi đang chơi đàn guitar.',
+                tip: 'Liên từ WHILE nối 2 hành động song song -> I was reading | my brother was playing.'
+            },
+            {
+                id: 54, section: 'F',
+                text: '54. She [input0] (walk) home when she [input1] (hear) a strange noise.',
+                answers: [['was walking'], ['heard']],
+                translation: 'Cô ấy đang đi bộ về nhà thì nghe thấy một tiếng động lạ.',
+                tip: 'Đang đi bộ (QKTD: was walking) + nghe thấy âm thanh lạ xen vào (QKĐ: hear -> heard).'
+            },
+            {
+                id: 55, section: 'F',
+                text: '55. While my father [input0] (drive), my mother [input1] (talk) to him.',
+                answers: [['was driving'], ['was talking']],
+                translation: 'Trong khi bố tôi đang lái xe, mẹ tôi đang nói chuyện với ông ấy.',
+                tip: 'WHILE chỉ hai hành động xảy ra song song -> my father was driving | my mother was talking.'
+            },
+            {
+                id: 56, section: 'F',
+                text: '56. We [input0] (have) dinner when our guests [input1] (arrive).',
+                answers: [['were having'], ['arrived']],
+                translation: 'Chúng tôi đang ăn tối thì khách của chúng tôi đến.',
+                tip: 'Đang ăn tối (QKTD: were having) + khách đến xen vào (QKĐ: arrived).'
+            },
+            {
+                id: 57, section: 'F',
+                text: '57. At 9 p.m. last night, my parents [input0] (watch) a movie.',
+                answers: [['were watching']],
+                translation: 'Lúc 9 giờ tối qua, bố mẹ tôi đang xem một bộ phim.',
+                tip: '"At + giờ + last night" -> QKTD. Chủ ngữ "my parents" (số nhiều) -> were watching.'
+            },
+            {
+                id: 58, section: 'F',
+                text: '58. While the teacher [input0] (talk), the students [input1] (take) notes.',
+                answers: [['was talking'], ['were taking']],
+                translation: 'Trong khi thầy giáo đang giảng bài, các học sinh đang ghi chép.',
+                tip: 'WHILE chỉ hai hành động song song -> the teacher was talking | the students were taking.'
+            },
+            {
+                id: 59, section: 'F',
+                text: '59. I [input0] (take) a shower when someone [input1] (knock) on the door.',
+                answers: [['was taking'], ['knocked']],
+                translation: 'Tôi đang tắm thì ai đó gõ cửa.',
+                tip: 'Đang tắm (QKTD: was taking) + có ai đó gõ cửa xen vào (QKĐ: knocked).'
+            },
+            {
+                id: 60, section: 'F',
+                text: '60. While I [input0] (clean) my room, my sister [input1] (do) her homework.',
+                answers: [['was cleaning'], ['was doing']],
+                translation: 'Trong khi tôi đang dọn phòng, em gái tôi đang làm bài tập về nhà.',
+                tip: 'WHILE nối 2 hành động song song -> I was cleaning | my sister was doing.'
+            }
+        ];
+
+        // State variables
+        let currentSection = 'ALL';
+        const totalQuestionsCount = rawData.length;
+        // Object to keep track of checked status for each question (e.g. checkedStatus[0] = true/false)
+        const checkedStatus = {};
+
+        // Normalize text helper function
+        function normalizeText(text) {
+            return text.trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        // Render functions
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            const filteredData = currentSection === 'ALL' 
+                ? rawData 
+                : rawData.filter(q => q.section === currentSection);
+
+            let currentSectionGroup = '';
+
+            filteredData.forEach((q) => {
+                const globalIndex = rawData.indexOf(q);
+
+                // Section Title Banner if transitioning to a new section
+                if (q.sectionTitle && q.section !== currentSectionGroup) {
+                    currentSectionGroup = q.section;
+                    const headerEl = document.createElement('div');
+                    headerEl.className = 'pt-6 pb-2 border-b-2 border-emerald-500/30 flex items-center justify-between mb-2';
+                    headerEl.innerHTML = `
+                        <h3 class="text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+                            ${q.sectionTitle}
+                        </h3>
+                    `;
+                    container.appendChild(headerEl);
+                }
+
+                // Render Card
+                const card = document.createElement('div');
+                card.id = `card-${globalIndex}`;
+                card.className = 'bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200 dark:border-slate-700 transition-all';
+
+                // Format inputs inside the question text
+                let formattedText = q.text;
+                q.answers.forEach((_, inputIdx) => {
+                    const placeholderTag = `[input${inputIdx}]`;
+                    const inputHtml = `
+                        <span class="inline-block mx-1 my-1">
+                            <input type="text" 
+                                id="input-${globalIndex}-${inputIdx}"
+                                data-global-idx="${globalIndex}"
+                                data-input-idx="${inputIdx}"
+                                class="quiz-input px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-100 font-semibold text-sm sm:text-base focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900/50 transition-all min-w-[110px] max-w-[180px] text-center"
+                                placeholder="..."
+                                autocomplete="off"
+                                onkeydown="handleKeyDown(event, ${globalIndex}, ${inputIdx})"
+                            />
+                        </span>
+                    `;
+                    formattedText = formattedText.replace(placeholderTag, inputHtml);
+                });
+
+                const isAlreadyChecked = !!checkedStatus[globalIndex];
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div class="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 leading-relaxed flex-1">
+                            ${formattedText}
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-start">
+                            <button onclick="checkSingleQuestion(${globalIndex})" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-check"></i> Kiểm Tra
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Explanation Card - Only visible AFTER checking -->
+                    <div id="explanation-${globalIndex}" class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 ${isAlreadyChecked ? 'fade-in' : 'hidden'}">
+                        <div id="feedback-${globalIndex}" class="mb-3 text-xs sm:text-sm font-bold flex items-center gap-2"></div>
+                        
+                        <div class="space-y-2 text-xs sm:text-sm">
+                            <div class="text-slate-700 dark:text-slate-200 bg-emerald-50/60 dark:bg-emerald-950/30 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/40 flex items-start gap-2">
+                                <i class="fa-solid fa-key text-emerald-600 dark:text-emerald-400 mt-0.5"></i>
+                                <div><b>Đáp án đúng:</b> <span id="correct-ans-text-${globalIndex}" class="font-bold text-emerald-700 dark:text-emerald-300"></span></div>
+                            </div>
+
+                            <div class="text-slate-700 dark:text-slate-200 bg-blue-50/60 dark:bg-blue-950/30 p-2.5 rounded-xl border border-blue-100 dark:border-blue-900/40 flex items-start gap-2">
+                                <i class="fa-solid fa-language text-blue-500 mt-0.5"></i>
+                                <div><b>Dịch câu:</b> ${q.translation}</div>
+                            </div>
+
+                            <div class="text-slate-700 dark:text-slate-200 bg-amber-50/60 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-100 dark:border-amber-900/40 flex items-start gap-2">
+                                <i class="fa-solid fa-lightbulb text-amber-500 mt-0.5"></i>
+                                <div><b>Mẹo nhớ:</b> ${q.tip}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            updateProgressStats();
+        }
+
+        // Handle Enter key on input fields
+        function handleKeyDown(event, globalIndex, inputIdx) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const q = rawData[globalIndex];
+                
+                // Check current question on Enter
+                checkSingleQuestion(globalIndex);
+
+                // Move focus to next input if present, or next question's first input
+                if (inputIdx < q.answers.length - 1) {
+                    const nextInput = document.getElementById(`input-${globalIndex}-${inputIdx + 1}`);
+                    if (nextInput) nextInput.focus();
+                } else {
+                    const nextCardInput = document.getElementById(`input-${globalIndex + 1}-0`);
+                    if (nextCardInput) nextCardInput.focus();
+                }
+            }
+        }
+
+        // Check a single question
+        function checkSingleQuestion(globalIndex) {
+            const q = rawData[globalIndex];
+            let allCorrect = true;
+
+            q.answers.forEach((acceptableAnswers, inputIdx) => {
+                const inputEl = document.getElementById(`input-${globalIndex}-${inputIdx}`);
+                if (!inputEl) return;
+
+                const val = normalizeText(inputEl.value);
+                const isMatch = acceptableAnswers.some(ans => normalizeText(ans) === val);
+
+                inputEl.classList.remove('correct-input', 'incorrect-input');
+                if (isMatch) {
+                    inputEl.classList.add('correct-input');
+                } else {
+                    inputEl.classList.add('incorrect-input');
+                    allCorrect = false;
+                }
+            });
+
+            // Mark question as checked
+            checkedStatus[globalIndex] = true;
+
+            // Reveal explanation area with animation
+            const explanationEl = document.getElementById(`explanation-${globalIndex}`);
+            const feedbackEl = document.getElementById(`feedback-${globalIndex}`);
+            const correctAnsTextEl = document.getElementById(`correct-ans-text-${globalIndex}`);
+
+            if (explanationEl) {
+                explanationEl.classList.remove('hidden');
+                explanationEl.classList.add('fade-in');
+            }
+
+            // Fill formatted correct answers string
+            const formattedCorrectAns = q.answers.map(ansArr => ansArr[0]).join('  |  ');
+            if (correctAnsTextEl) {
+                correctAnsTextEl.textContent = formattedCorrectAns;
+            }
+
+            // Fill Feedback badge
+            if (feedbackEl) {
+                if (allCorrect) {
+                    feedbackEl.className = 'mb-3 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5';
+                    feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i> Chính xác! Hoàn thành xuất sắc.`;
+                } else {
+                    feedbackEl.className = 'mb-3 text-xs sm:text-sm font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5';
+                    feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i> Chưa chính xác. Xem đáp án và mẹo bên dưới!`;
+                }
+            }
+
+            updateProgressStats();
+        }
+
+        // Check All Questions at once
+        function checkAllAnswers() {
+            rawData.forEach((_, idx) => {
+                checkSingleQuestion(idx);
+            });
+        }
+
+        // Reset All Questions
+        function resetAll() {
+            rawData.forEach((q, globalIndex) => {
+                delete checkedStatus[globalIndex];
+
+                q.answers.forEach((_, inputIdx) => {
+                    const inputEl = document.getElementById(`input-${globalIndex}-${inputIdx}`);
+                    if (inputEl) {
+                        inputEl.value = '';
+                        inputEl.classList.remove('correct-input', 'incorrect-input');
+                    }
+                });
+
+                const explanationEl = document.getElementById(`explanation-${globalIndex}`);
+                if (explanationEl) {
+                    explanationEl.classList.add('hidden');
+                    explanationEl.classList.remove('fade-in');
+                }
+            });
+
+            updateProgressStats();
+        }
+
+        // Filter Sections
+        function filterSection(sectionCode) {
+            currentSection = sectionCode;
+            
+            document.querySelectorAll('.section-tab').forEach(tab => {
+                if (tab.dataset.section === sectionCode) {
+                    tab.className = 'section-tab active-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-emerald-600 text-white shadow-xs';
+                } else {
+                    tab.className = 'section-tab px-3.5 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700';
+                }
+            });
+
+            const titleEl = document.getElementById('section-title');
+            const descEl = document.getElementById('section-desc');
+
+            const infoMap = {
+                'ALL': ['Tất Cả Bài Tập (60 Câu)', 'Tổng hợp toàn bộ 60 câu từ Phần A đến F.'],
+                'A': ['Phần A: Một hành động đang diễn ra tại mốc thời gian quá khứ', 'Dấu hiệu: at + giờ, at this time + quá khứ...'],
+                'B': ['Phần B: Hai hành động xảy ra song song – WHILE', 'Cả hai vế xảy ra đồng thời trong quá khứ.'],
+                'C': ['Phần C: Hành động đang diễn ra + xen vào – WHEN', 'Đang diễn ra (QKTD) + Hành động xen vào (QKĐ).'],
+                'D': ['Phần D: WHEN / WHILE – Tổng hợp', 'Thực hành phân biệt cấu trúc WHEN và WHILE.'],
+                'E': ['Phần E: Câu phủ định và nghi vấn', 'Cấu trúc phủ định (wasn\'t/weren\'t) và nghi vấn (Was/Were + S + V-ing).'],
+                'F': ['Phần F: Bài tập tổng hợp – Nhận biết dấu hiệu', 'Tổng hợp nhận biết và làm chủ bài tập.']
+            };
+
+            if (infoMap[sectionCode]) {
+                titleEl.textContent = infoMap[sectionCode][0];
+                descEl.textContent = infoMap[sectionCode][1];
+            }
+
+            renderQuestions();
+        }
+
+        // Update overall stats
+        function updateProgressStats() {
+            let correctCount = 0;
+            let checkedCount = 0;
+
+            rawData.forEach((q, globalIndex) => {
+                if (checkedStatus[globalIndex]) {
+                    checkedCount++;
+                    let qCorrect = true;
+
+                    q.answers.forEach((ansGroup, inputIdx) => {
+                        const inputEl = document.getElementById(`input-${globalIndex}-${inputIdx}`);
+                        const val = inputEl ? normalizeText(inputEl.value) : '';
+                        const isMatch = ansGroup.some(ans => normalizeText(ans) === val);
+                        if (!isMatch) qCorrect = false;
+                    });
+
+                    if (qCorrect) correctCount++;
+                }
+            });
+
+            const percent = Math.round((checkedCount / totalQuestionsCount) * 100);
+            
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-percentage').textContent = `${percent}%`;
+            document.getElementById('score-text').textContent = `${correctCount} / ${totalQuestionsCount}`;
+            document.getElementById('checked-text').textContent = `${checkedCount} / ${totalQuestionsCount}`;
+        }
+
+        // Toggle Dark Mode
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        // Toggle Theory Modal
+        function toggleTheoryModal() {
+            const modal = document.getElementById('theory-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        // App Initialization
+        window.onload = function() {
+            renderQuestions();
+        };
+    </script>
+</body>
+</html>

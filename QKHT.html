@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Tập Thì Quá Khứ Hoàn Thành Tương Tác</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px 20px 80px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        /* Thanh công cụ ghi chú & Highlight */
+        .toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: #f1f5f9;
+        }
+
+        .btn.active {
+            background-color: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+        .color-picker {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            background: transparent;
+        }
+
+        /* Popup Highlight chữ khi bôi đen */
+        #highlight-menu {
+            position: absolute;
+            display: none;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 4px;
+            z-index: 1001;
+        }
+
+        .hl-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .hl-yellow { background-color: #fef08a; }
+        .hl-green { background-color: #bbf7d0; }
+        .hl-pink { background-color: #fbcfe8; }
+        .hl-remove { background: #fff; text-align: center; line-height: 20px; font-size: 12px; font-weight: bold; color: #ef4444; }
+
+        /* Canvas ghi chú */
+        #draw-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        #draw-canvas.active {
+            pointer-events: auto;
+            cursor: crosshair;
+        }
+
+        .section-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .section-title {
+            color: #2980b9;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 8px;
+            margin-top: 0;
+            font-size: 1.25rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-left: 4px solid #cbd5e1;
+            background-color: #f8fafc;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .exercise-item:hover {
+            background-color: #f1f5f9;
+            border-left-color: #3b82f6;
+        }
+
+        .question {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .instruction {
+            font-size: 0.85em;
+            color: #64748b;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .answer {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #dcfce7;
+            border: 1px solid #86efac;
+            border-radius: 4px;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .answer.show {
+            display: block;
+        }
+
+        mark.custom-hl {
+            padding: 2px 0;
+            border-radius: 2px;
+        }
+
+        u {
+            text-decoration: underline;
+            text-decoration-color: #ef4444;
+            text-decoration-thickness: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas hỗ trợ bút ghi chú -->
+    <canvas id="draw-canvas"></canvas>
+
+    <!-- Thanh công cụ tương tác -->
+    <div class="toolbar">
+        <div class="toolbar-group">
+            <button id="pen-toggle" class="btn" onclick="togglePen()">✏️ Bút ghi chú</button>
+            <input type="color" id="pen-color" class="color-picker" value="#ef4444" title="Chọn màu bút">
+            <button class="btn" onclick="clearCanvas()">🗑️ Xóa nét vẽ</button>
+        </div>
+        <div style="border-left: 1px solid #ccc; height: 20px;"></div>
+        <div class="toolbar-group">
+            <span style="font-size: 0.85rem; color: #64748b;">Mẹo: Bôi đen chữ để Tô Highlight</span>
+        </div>
+    </div>
+
+    <!-- Menu tô Highlight chữ -->
+    <div id="highlight-menu">
+        <span class="hl-btn hl-yellow" title="Tô Vàng" onclick="applyHighlight('#fef08a')"></span>
+        <span class="hl-btn hl-green" title="Tô Xanh" onclick="applyHighlight('#bbf7d0')"></span>
+        <span class="hl-btn hl-pink" title="Tô Hồng" onclick="applyHighlight('#fbcfe8')"></span>
+        <span class="hl-btn hl-remove" title="Xóa Highlight" onclick="removeHighlight()">✕</span>
+    </div>
+
+    <h1>BÀI TẬP CHIA ĐỘNG TỪ – THÌ QUÁ KHỨ HOÀN THÀNH</h1>
+
+    <!-- Phần A -->
+    <div class="section-card">
+        <h2 class="section-title">A. Một sự việc xảy ra trước một thời điểm cụ thể trong quá khứ</h2>
+        
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">1. <u>By 2010</u>, he _______ (work) as a teacher for many years.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had worked</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">2. <u>Before 2000</u>, my father _______ (live) in Hanoi.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had lived</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">3. <u>By 2015</u>, she _______ (finish) university.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had finished</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">4. <u>Before last year</u>, we _______ (never / visit) Da Nang.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had never visited</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">5. <u>By the end of 2020</u>, they _______ (build) a new school.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had built</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">6. <u>Before 1995</u>, my grandfather _______ (work) in a factory.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had worked</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">7. <u>By 8 p.m. yesterday</u>, I _______ (finish) my homework.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had finished</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">8. <u>Before last summer</u>, she _______ (never / travel) abroad.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had never traveled / had never travelled</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">9. <u>By the time I was 18</u>, I _______ (learn) how to drive.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had learned / had learnt</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">10. <u>By 2018</u>, the company _______ (open) three new offices.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had opened</div>
+        </div>
+    </div>
+
+    <!-- Phần B -->
+    <div class="section-card">
+        <h2 class="section-title">B. Hai sự việc xảy ra trong quá khứ – sự việc xảy ra trước dùng QUÁ KHỨ HOÀN THÀNH</h2>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">1. <u>By the time</u> I _______ (arrive), the class _______ (start).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had started</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">2. <u>When</u> she _______ (come) home, her family _______ (already / have) dinner.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ came / had already had</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">3. <u>Before</u> he _______ (go) to bed, he _______ (finish) his homework.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ went / had finished</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">4. <u>After</u> they _______ (finish) lunch, they _______ (go) for a walk.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had finished / went</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">5. <u>When</u> we _______ (get) to the station, the train _______ (leave).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ got / had left</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">6. <u>By the time</u> the teacher _______ (arrive), the students _______ (sit) down.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had sat</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">7. <u>Before</u> I _______ (watch) the movie, I _______ (read) the book.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ watched / had read</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">8. <u>After</u> she _______ (do) her homework, she _______ (watch) TV.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had done / watched</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">9. <u>When</u> I _______ (meet) him, he _______ (already / hear) the news.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ met / had already heard</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">10. <u>By the time</u> we _______ (arrive) at the restaurant, our friends _______ (order) the food.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had ordered</div>
+        </div>
+    </div>
+
+    <!-- Phần C -->
+    <div class="section-card">
+        <h2 class="section-title">C. BEFORE / AFTER</h2>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">1. <u>Before</u> I _______ (go) to school, I _______ (have) breakfast.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ went / had had</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">2. <u>Before</u> she _______ (leave) the house, she _______ (lock) the door.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ left / had locked</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">3. <u>Before</u> they _______ (move) to Cam Ranh, they _______ (live) in Hanoi.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ moved / had lived</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">4. <u>After</u> he _______ (finish) his work, he _______ (go) home.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had finished / went</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">5. <u>After</u> we _______ (eat) dinner, we _______ (wash) the dishes.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had eaten / washed</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">6. <u>After</u> she _______ (read) the instructions, she _______ (start) the test.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had read / started</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">7. <u>Before</u> the students _______ (take) the exam, they _______ (review) the lesson.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ took / had reviewed</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">8. <u>After</u> my father _______ (come) home, we _______ (have) dinner.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had come / had</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">9. <u>Before</u> I _______ (buy) the laptop, I _______ (compare) several models.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ bought / had compared</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">10. <u>After</u> they _______ (clean) the classroom, they _______ (go) home.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had cleaned / went</div>
+        </div>
+    </div>
+
+    <!-- Phần D -->
+    <div class="section-card">
+        <h2 class="section-title">D. BY THE TIME</h2>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">1. <u>By the time</u> I _______ (get) home, my mother _______ (cook) dinner.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ got / had cooked</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">2. <u>By the time</u> the movie _______ (start), we _______ (find) our seats.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ started / had found</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">3. <u>By the time</u> she _______ (arrive), everyone _______ (leave).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had left</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">4. <u>By the time</u> we _______ (reach) the airport, the plane _______ (take) off.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ reached / had taken</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">5. <u>By the time</u> he _______ (come) back, his friends _______ (go) home.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ came / had gone</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">6. <u>By the time</u> the teacher _______ (enter) the classroom, the students _______ (open) their books.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ entered / had opened</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">7. <u>By the time</u> I _______ (call) him, he _______ (already / go) to bed.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ called / had already gone</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">8. <u>By the time</u> they _______ (arrive) at the hotel, the staff _______ (prepare) their rooms.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had prepared</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">9. <u>By the time</u> she _______ (finish) school, she _______ (learn) three foreign languages.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ finished / had learned (had learnt)</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">10. <u>By the time</u> we _______ (reach) the station, the train _______ (already / leave).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ reached / had already left</div>
+        </div>
+    </div>
+
+    <!-- Phần E -->
+    <div class="section-card">
+        <h2 class="section-title">E. WHEN / AS SOON AS</h2>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">1. <u>When</u> I _______ (arrive) at the party, my friends _______ (already / eat).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had already eaten</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">2. <u>When</u> she _______ (open) the door, someone _______ (already / leave).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ opened / had already left</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">3. <u>When</u> we _______ (get) home, our parents _______ (already / have) dinner.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ got / had already had</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">4. <u>When</u> he _______ (meet) his teacher, he _______ (already / finish) the assignment.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ met / had already finished</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">5. <u>As soon as</u> I _______ (finish) my homework, I _______ (go) to bed.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had finished / went (hoặc finished / went)</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">6. <u>As soon as</u> she _______ (finish) cooking, she _______ (serve) the food.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had finished / served (hoặc finished / served)</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">7. <u>As soon as</u> they _______ (arrive), we _______ (start) the meeting.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had arrived / started (hoặc arrived / started)</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">8. <u>As soon as</u> he _______ (complete) the project, he _______ (send) it to his manager.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had completed / sent (hoặc completed / sent)</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">9. <u>When</u> the police _______ (arrive), the thief _______ (already / escape).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had already escaped</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">10. <u>When</u> I _______ (see) her, she _______ (already / hear) the news.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ saw / had already heard</div>
+        </div>
+    </div>
+
+    <!-- Phần F -->
+    <div class="section-card">
+        <h2 class="section-title">F. Câu phủ định và nghi vấn</h2>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">1. She _______ (not finish) her homework <u>before</u> she _______ (go) to bed.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ hadn't finished / went</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">2. They _______ (not leave) <u>when</u> we _______ (arrive).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ hadn't left / arrived</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">3. I _______ (not see) that movie <u>before</u> my friend _______ (recommend) it.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ hadn't seen / recommended</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">4. He _______ (not eat) breakfast <u>before</u> he _______ (go) to school.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ hadn't eaten / went</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">5. _______ you _______ (finish) your homework <u>before</u> you _______ (go) out?</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ Had / finished / went</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">6. _______ she _______ (already / leave) <u>when</u> you _______ (arrive)?</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ Had / already left / arrived</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">7. What _______ you _______ (do) <u>after</u> you _______ (finish) school?</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ did / do / had finished</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">8. Where _______ they _______ (go) <u>after</u> they _______ (finish) the meeting?</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ did / go / had finished</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">9. Why _______ he _______ (leave) <u>after</u> he _______ (hear) the news?</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ did / leave / had heard</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">10. Had they _______ (already / start) the lesson <u>when</u> the teacher _______ (arrive)?</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ already started / arrived</div>
+        </div>
+    </div>
+
+    <!-- Phần G -->
+    <div class="section-card">
+        <h2 class="section-title">G. Bài tập tổng hợp – QUÁ KHỨ ĐƠN / QUÁ KHỨ TIẾP DIỄN / QUÁ KHỨ HOÀN THÀNH</h2>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">1. <u>When</u> I _______ (arrive) home, my mother _______ (already / cook) dinner.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had already cooked</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">2. <u>While</u> I _______ (walk) to school, I _______ (see) my old teacher.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ was walking / saw</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">3. <u>By the time</u> we _______ (get) to the station, the train _______ (leave).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ got / had left</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">4. <u>While</u> she _______ (study), her brother _______ (play) computer games.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ was studying / was playing</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">5. <u>Before</u> he _______ (go) to bed, he _______ (finish) his homework.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ went / had finished</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">6. I _______ (watch) TV <u>when</u> my father _______ (come) home.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ was watching / came</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">7. <u>After</u> they _______ (finish) dinner, they _______ (go) for a walk.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had finished / went</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">8. <u>By 9 p.m. yesterday</u>, I _______ (complete) all my work.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ had completed</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">9. <u>When</u> we _______ (arrive) at the cinema, the movie _______ (already / start).</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ arrived / had already started</div>
+        </div>
+
+        <div class="exercise-item" onclick="toggleAnswer(this)">
+            <div class="question">10. <u>While</u> the students _______ (do) the test, the teacher _______ (walk) around the classroom.</div>
+            <div class="instruction">(Nhấp để xem đáp án)</div>
+            <div class="answer">→ were doing / was walking</div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Logic ẩn/hiện đáp án
+        function toggleAnswer(element) {
+            if (isPenActive) return;
+            const answer = element.querySelector('.answer');
+            answer.classList.toggle('show');
+        }
+
+        // 2. Logic Bút vẽ Ghi chú (Canvas)
+        const canvas = document.getElementById('draw-canvas');
+        const ctx = canvas.getContext('2d');
+        let isPenActive = false;
+        let isDrawing = false;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function togglePen() {
+            isPenActive = !isPenActive;
+            const penBtn = document.getElementById('pen-toggle');
+            if (isPenActive) {
+                penBtn.classList.add('active');
+                canvas.classList.add('active');
+            } else {
+                penBtn.classList.remove('active');
+                canvas.classList.remove('active');
+            }
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (!isPenActive) return;
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing || !isPenActive) return;
+            ctx.lineTo(e.clientX, e.clientY);
+            ctx.strokeStyle = document.getElementById('pen-color').value;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        });
+
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+
+        // 3. Logic Tô Highlight Văn bản khi bôi đen
+        const hlMenu = document.getElementById('highlight-menu');
+        let selectedRange = null;
+
+        document.addEventListener('selectionchange', () => {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0 && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                if (rect.width > 0) {
+                    selectedRange = range.cloneRange();
+                    hlMenu.style.top = `${rect.top + window.scrollY - 35}px`;
+                    hlMenu.style.left = `${rect.left + window.scrollX}px`;
+                    hlMenu.style.display = 'block';
+                }
+            } else {
+                setTimeout(() => {
+                    if (!window.getSelection().toString()) {
+                        hlMenu.style.display = 'none';
+                    }
+                }, 200);
+            }
+        });
+
+        function applyHighlight(color) {
+            if (!selectedRange) return;
+            const mark = document.createElement('mark');
+            mark.className = 'custom-hl';
+            mark.style.backgroundColor = color;
+            
+            try {
+                selectedRange.surroundContents(mark);
+            } catch(e) {
+                console.log("Chọn văn bản trong cùng một khối.");
+            }
+            
+            window.getSelection().removeAllRanges();
+            hlMenu.style.display = 'none';
+        }
+
+        function removeHighlight() {
+            const selection = window.getSelection();
+            if (selection.anchorNode) {
+                let parent = selection.anchorNode.parentElement;
+                while (parent && !parent.classList.contains('custom-hl')) {
+                    parent = parent.parentElement;
+                }
+                if (parent && parent.classList.contains('custom-hl')) {
+                    const text = parent.textContent;
+                    parent.replaceWith(document.createTextNode(text));
+                }
+            }
+            hlMenu.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

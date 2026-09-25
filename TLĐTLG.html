@@ -92,7 +92,58 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
+        </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- 🔴 DÁN ĐOẠN NAV CỦA BẠN VÀO ĐÂY -->
+        <nav class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-xs border border-slate-200 dark:border-slate-700 mb-6 transition-all duration-200">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                <!-- Nhãn thì đang chọn -->
+                <div class="flex items-center space-x-3">
+                    <span class="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 font-bold text-base flex items-center justify-center">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </span>
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Đang chọn thì</span>
+                        <h3 id="current-tense-label" class="text-base font-extrabold text-slate-800 dark:text-slate-100">
+                            Tất Cả 6 Thì
+                        </h3>
+                    </div>
+                </div>
+
+                <!-- Các Tab Thì (Scroll ngang trên Mobile) -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
+                    <button onclick="filterTense('ALL')" class="tense-tab active-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap bg-blue-600 text-white shadow-xs" data-tense="ALL">
+                        Tất Cả
+                    </button>
+                    <button onclick="filterTense('PRESENT_SIMPLE')" class="tense-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-tense="PRESENT_SIMPLE">
+                        1. Hiện Tại Đơn
+                    </button>
+                    <button onclick="filterTense('PRESENT_CONTINUOUS')" class="tense-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-tense="PRESENT_CONTINUOUS">
+                        2. Hiện Tại Tiếp Diễn
+                    </button>
+                    <button onclick="filterTense('PRESENT_PERFECT')" class="tense-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-tense="PRESENT_PERFECT">
+                        3. Hiện Tại Hoàn Thành
+                    </button>
+                    <button onclick="filterTense('PAST_SIMPLE')" class="tense-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-tense="PAST_SIMPLE">
+                        4. Quá Khứ Đơn
+                    </button>
+                    <button onclick="filterTense('FUTURE_SIMPLE')" class="tense-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-tense="FUTURE_SIMPLE">
+                        5. Tương Lai Đơn
+                    </button>
+                    <button onclick="filterTense('NEAR_FUTURE')" class="tense-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700" data-tense="NEAR_FUTURE">
+                        6. Tương Lai Gần
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Top Progress Banner -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-xs border border-slate-200 dark:border-slate-700 mb-6">
+            ...
         <!-- Top Progress Banner -->
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-xs border border-slate-200 dark:border-slate-700 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
